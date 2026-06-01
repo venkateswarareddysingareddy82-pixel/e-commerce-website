@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.top-menu {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.product {
+    border: 1px solid gray;
+    padding: 15px;
+    width: 250px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+button {
+    background-color: blue;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+nav{
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+nav a {
+    text-decoration: none;
+    margin-right: 15px;
+    font-weight: bold;
+}

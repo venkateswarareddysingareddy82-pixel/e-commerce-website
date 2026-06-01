@@ -1,0 +1,33 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Cart</title>
+</head>
+<body>
+    {%  include 'navbar.html' %}
+
+<h1>Your Cart</h1>
+
+<a href="/">Back to Home</a>
+
+<hr>
+
+{% for item in cart %}
+
+<h3>{{ item.name }}</h3>
+<p>₹{{ item.price }}</p>
+
+<a href="/remove/{{ loop.index0 }}">
+    <button>Remove</button>
+</a>
+
+<hr>
+
+{% endfor %}
+<a href="/clear_cart">
+    <button>Clear Cart</button>
+</a>
+<h2>Total Bill: ₹{{ total }}</h2>
+
+</body>
+</html>

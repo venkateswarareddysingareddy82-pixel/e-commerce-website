@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Product</title>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<h1>Edit Product</h1>
+
+<form method="POST">
+
+    <input type="text"
+           name="name"
+           value="{{ product.name }}">
+
+    <br><br>
+
+    <input type="number"
+           name="price"
+           value="{{ product.price }}">
+
+    <br><br>
+
+    <button type="submit">
+        Update Product
+    </button>
+
+</form>
+
+</body>
+</html>
