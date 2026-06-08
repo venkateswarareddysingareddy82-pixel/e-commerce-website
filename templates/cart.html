@@ -1,10 +1,11 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Cart</title>
 </head>
 <body>
-    {%  include 'navbar.html' %}
+
+{% include 'navbar.html' %}
 
 <h1>Your Cart</h1>
 
@@ -14,19 +15,30 @@
 
 {% for item in cart %}
 
-<h3>{{ item.name }}</h3>
-<p>₹{{ item.price }}</p>
+<div class="cart-item">
 
-<a href="/remove/{{ loop.index0 }}">
-    <button>Remove</button>
-</a>
+    <img src="{{ item.image }}" width="150">
+
+    <h3>{{ item.product_name }}</h3>
+
+    <p>Price: ₹{{ item.price }}</p>
+
+    <a href="/remove/{{ item.id }}">
+        <button>Remove</button>
+    </a>
+
+</div>
 
 <hr>
 
 {% endfor %}
+<a href="/place_order">
+    <button>Place Order</button>
+</a>
 <a href="/clear_cart">
     <button>Clear Cart</button>
 </a>
+
 <h2>Total Bill: ₹{{ total }}</h2>
 
 </body>

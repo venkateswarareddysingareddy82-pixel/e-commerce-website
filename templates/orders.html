@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Orders</title>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<h1>My Orders</h1>
+
+<a href="/">Home</a>
+
+<hr>
+
+{% for order in orders %}
+
+<img src="{{ order.image }}" width="150">
+
+<h3>{{ order.product_name }}</h3>
+
+<p>₹{{ order.price }}</p>
+<a href="/cancel_order/{{ order.id }}">
+    <button>Cancel Order</button>
+</a>
+
+<hr>
+
+{% endfor %}
+
+</body>
+</html>

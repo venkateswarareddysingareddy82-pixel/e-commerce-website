@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key="mysecretkey"
-# Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///store.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -19,7 +18,21 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     price = db.Column(db.Integer)
-    
+    image = db.Column(db.String(200)) 
+
+class Cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100))
+    product_id = db.Column(db.Integer)
+    product_name = db.Column(db.String(100))
+    price = db.Column(db.Integer)
+    image = db.Column(db.String(200))
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100))
+    product_name = db.Column(db.String(100))
+    price = db.Column(db.Integer)
+    image = db.Column(db.String(200) )  
   
    
 
@@ -54,40 +67,64 @@ def home():
 @app.route('/add/<int:id>')
 def add_to_cart(id):
 
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     product = Product.query.get(id)
 
     if product:
-        cart.append({
-            "id": product.id,
-            "name": product.name,
-            "price": product.price
-        })
+       item = Cart(
+        username=session['username'],
+        product_id=product.id,
+        product_name=product.name,
+        price=product.price,
+        image=product.image
+        )
+
+    db.session.add(item)
+    db.session.commit()
 
     return redirect(url_for('home'))
 
-# View Cart
 @app.route('/cart')
 def view_cart():
-    total = sum(item["price"] for item in cart)
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    cart_items = Cart.query.filter_by(
+        username=session['username']
+    ).all()
+
+    total = sum(item.price for item in cart_items)
 
     return render_template(
         'cart.html',
-        cart=cart,
+        cart=cart_items,
         total=total
     )
-
 # Remove Item
-@app.route('/remove/<int:index>')
-def remove_item(index):
-    if index < len(cart):
-        cart.pop(index)
+@app.route('/remove/<int:id>')
+def remove_item(id):
+
+    item = Cart.query.get(id)
+
+    if item:
+        db.session.delete(item)
+        db.session.commit()
 
     return redirect(url_for('view_cart'))
 
 # Clear Cart
 @app.route('/clear_cart')
 def clear_cart():
-    cart.clear()
+
+    Cart.query.filter_by(
+        username=session['username']
+    ).delete()
+
+    db.session.commit()
+
     return redirect(url_for('view_cart'))
 
 # Register
@@ -138,7 +175,7 @@ def admin_login():
         username = request.form['username']
         password = request.form['password']
 
-        if username == "venky" and password == "venky77@":
+        if username == "admin" and password == "admin123":
             session['admin'] = True
             return redirect(url_for('admin'))
 
@@ -150,16 +187,17 @@ def admin():
 
     if 'admin' not in session:
         return redirect(url_for('admin_login'))
+
     if request.method == 'POST':
+
         name = request.form['name']
         price = request.form['price']
-        image=request.form['image']
-        
+        image = request.form['image']
+
         product = Product(
             name=name,
             price=price,
-            
-            
+            image=image
         )
 
         db.session.add(product)
@@ -171,7 +209,6 @@ def admin():
         'admin.html',
         products=products
     )
-
 # Create Database Tables
 with app.app_context():
     db.create_all()
@@ -209,6 +246,71 @@ def edit_product(id):
         'edit_product.html',
         product=product
     )
+@app.route('/search')
+def search():
+
+    keyword = request.args.get('q')
+
+    products = Product.query.filter(
+        Product.name.contains(keyword)
+    ).all()
+
+    return render_template(
+        'index.html',
+        products=products
+    )
+@app.route('/orders')
+def my_orders():
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    orders = Order.query.filter_by(
+        username=session['username']
+    ).all()
+
+    return render_template(
+        'orders.html',
+        orders=orders
+    )
+@app.route('/place_order')
+def place_order():
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    cart_items = Cart.query.filter_by(
+        username=session['username']
+    ).all()
+
+    for item in cart_items:
+
+        order = Order(
+            username=item.username,
+            product_name=item.product_name,
+            price=item.price,
+            image=item.image
+        )
+
+        db.session.add(order)
+
+    Cart.query.filter_by(
+        username=session['username']
+    ).delete()
+
+    db.session.commit()
+
+    return redirect(url_for('my_orders'))
+@app.route('/cancel_order/<int:id>')
+def cancel_order(id):
+
+    order = Order.query.get(id)
+
+    if order:
+        db.session.delete(order)
+        db.session.commit()
+
+    return redirect(url_for('my_orders'))
 # Run App
 if __name__ == '__main__':
     app.run(debug=True)

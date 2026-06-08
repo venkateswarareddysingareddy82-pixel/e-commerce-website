@@ -5,32 +5,50 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
 {% include 'navbar.html' %}
+
 {% if username %}
-    <h2>Welcome {{ username}}</h2>
+    <h2>Welcome {{ username }}</h2>
 {% endif %}
+
 <h1>Welcome to My E-Commerce Website</h1>
 
 <div class="top-menu">
     <a href="/register">Register</a>
     <a href="/login">Login</a>
-    <a href="/cart">🛒 View Cart({{ cart_count}})</a>
+    <a href="/cart">🛒 View Cart({{ cart_count }})</a>
 </div>
+
+<form action="/search" method="GET">
+    <input type="text" name="q" placeholder="Search products">
+    <button type="submit">Search</button>
+</form>
+<div class="products-container">
 
 {% for product in products %}
 
-    
 <div class="product">
-   
-     <h3>{{ product.name }}</h3>
-     <p>Price: ₹{{ product.price }}</p>
+
+    <a href="{{ product.image }}" target="_blank">
+    <img src="{{ product.image }}" width="150">
+</a>
+
+    <h3>{{ product.name }}</h3>
+    <p>Price: ₹{{ product.price }}</p>
 
     <a href="/add/{{ product.id }}">
         <button>Add to Cart</button>
     </a>
+
 </div>
 
 {% endfor %}
+
+</div>
+
+
+
 
 </body>
 </html>
