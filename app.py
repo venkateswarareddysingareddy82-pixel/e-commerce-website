@@ -190,6 +190,11 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
+@app.route('/admin-logout')
+def admin_logout():
+    session.clear()
+    return redirect(url_for('admin_login'))
+
 @app.route('/search')
 def search():
     keyword = request.args.get('q')
