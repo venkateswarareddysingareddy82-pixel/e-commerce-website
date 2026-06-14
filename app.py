@@ -311,6 +311,10 @@ def cancel_order(id):
         db.session.commit()
 
     return redirect(url_for('my_orders'))
+@app.route('/admin-logout')
+def admin_logout():
+    session.pop('admin', None)
+    return redirect(url_for('admin_login'))
 # Run App
 if __name__ == '__main__':
     app.run(debug=True)
